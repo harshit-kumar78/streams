@@ -11,7 +11,7 @@ async function main() {
   app.use(appStatus());
 
   app.get("/", (req, res) => {
-    readingDataUsingStreamAndWritingToAfile();
+    createZipFileUsingStream();
   });
   //listening
   app.listen(5000, () => {
@@ -19,7 +19,7 @@ async function main() {
   });
 }
 
-main();
+main().catch(console.log);
 
 /**
  * Asynchronously reads the contents of the file `input2.txt` and sends it as the HTTP response.
@@ -153,4 +153,27 @@ function readingDataUsingStreamAndWritingToAfile() {
       console.log("Pipeline succeeded!");
     }
   });
+}
+
+/**
+ * Compresses a file using GZIP and writes the compressed data to a new file.
+ *
+ * @function
+ * @name createZipFileUsingStream
+ * @returns {void} The function performs streaming operations without returning a value.
+ */
+function createZipFileUsingStream() {
+  // Create a readable stream from a file
+  const readableStream = fs.createReadStream("input2.txt");
+
+  // Create a writable stream to write the compressed file
+  const writableStream = fs.createWriteStream("sample.zip");
+
+  // Create a GZIP stream to compress the data
+  const gzipStream = zlib.createGzip();
+
+  // Pipe the data from the readable stream to the GZIP stream, and then to the writable stream
+  readableStream.pipe(gzipStream).pipe(writableStream);
+
+  console.log("File has been compressed!");
 }
